@@ -1,4 +1,4 @@
-# 🚀 Fire Alert & Management System - Angular Frontend 🔥
+# 🚀 Fire Alert & Management System - Angular Frontend 
 
 Ce projet est une **application web de gestion des alertes incendie** développée avec **Angular** pour le frontend et **Node.js/Express** pour le backend. Il inclut des fonctionnalités telles que **l'authentification JWT, la gestion des alertes, l'analyse des incidents et l'administration des utilisateurs**.
 
@@ -14,7 +14,7 @@ Les services sont **conteneurisés** et orchestrés avec **Docker Compose**.
 
 ---
 
-## 🏗️ Déploiement avec Docker
+##  Déploiement avec Docker
 
 Le projet est configuré avec `docker-compose.yml` pour simplifier son exécution. 
 
