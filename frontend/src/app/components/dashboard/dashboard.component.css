@@ -1,0 +1,41 @@
+.dashboard-container {
+    padding: 20px;
+  }
+  
+  .dashboard-header h1 {
+    margin-bottom: 20px;
+  }
+  
+  .stats-cards {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .card {
+    background: #f5f5f5;
+    padding: 15px;
+    border-radius: 5px;
+    flex: 1;
+    text-align: center;
+  }
+  
+  .dashboard-content {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .map-section, .chart-section {
+    flex: 1;
+  }
+  
+  .map-section img, .chart-section img {
+    width: 100%;
+    border-radius: 5px;
+  }
+  
+  .bg-custom-green {
+    background-color: #6d9e8e; /* Vert plus foncé */
+    color: white; /* Texte blanc pour le contraste */
+  }
+  

@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "workspaces": [
+    "api-gateway",
+    "services"
+  ],
+  "dependencies": {
+    "dotenv": "^16.4.7"
+  }
+}

@@ -1,0 +1,30 @@
+<div class="settings-container">
+    <header>
+      <h1>Paramètres</h1>
+    </header>
+    
+    <form>
+      <fieldset>
+        <legend>Configuration des alertes</legend>
+        <div class="form-group">
+          <label for="battery-threshold">Seuil Batterie (en %):</label>
+          <input type="number" id="battery-threshold" value="20" />
+        </div>
+        <div class="form-group">
+          <label for="geo-zone">Zone géographique autorisée :</label>
+          <input type="text" id="geo-zone" placeholder="Ex. Paris, Île-de-France" />
+        </div>
+      </fieldset>
+      
+      <fieldset>
+        <legend>Paramètres de l’application</legend>
+        <div class="form-group">
+          <label for="refresh-rate">Fréquence d’actualisation (sec) :</label>
+          <input type="number" id="refresh-rate" value="60" />
+        </div>
+      </fieldset>
+      
+      <button type="submit" class="btn-submit">Enregistrer</button>
+    </form>
+  </div>
+  

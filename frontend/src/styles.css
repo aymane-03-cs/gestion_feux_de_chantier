@@ -1,0 +1,23 @@
+/* You can add global styles to this file, and also import other style files */
+.wrapper {
+    display: flex;
+    height: 100vh; /* Prend toute la hauteur de l'écran */
+    overflow: hidden; /* Évite le débordement */
+  }
+  
+.main-sidebar {
+    width: 250px; /* Ajuste la largeur de la sidebar */
+    height: 100vh; /* Assure que la sidebar prend toute la hauteur */
+    background-color: #343a40; /* Couleur de fond pour mieux voir */
+    color: white;
+}
+  
+.content-wrapper {
+    flex: 1; /* Prend tout l'espace disponible */
+    height: 100vh; /* S'assure que le contenu occupe toute la hauteur */
+    overflow-y: auto; /* Permet le scroll si le contenu dépasse */
+    padding: 20px; /* Ajoute un peu d'espace autour du contenu */
+    background-color: #f8f9fa; /* Fond pour bien distinguer */
+}
+  
+

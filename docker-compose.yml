@@ -1,0 +1,142 @@
+
+services:
+  api-gateway:
+    container_name: api_gateway
+    build:
+      context: ./backend/api-gatwey
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - ./backend/api-gatwey/.env
+    depends_on:
+      # database:
+      #   condition: service_healthy
+      users-service:
+        condition: service_started
+      feu-service:
+        condition: service_started
+      authentication:
+        condition: service_started
+    networks:
+      - app-network  
+    restart: unless-stopped 
+
+  authentication:
+    container_name: auth_service
+    build: 
+      context: ./backend/services/authentification
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - ./backend/services/authentification/.env  
+    networks:
+      - app-network  
+    restart: unless-stopped 
+
+  alert-service:
+    container_name: alert_service
+    build:
+      context: ./backend/services/alert
+      dockerfile: Dockerfile
+    ports:
+      - "3003:3003"
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - ./backend/services/alert/.env
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  rapport-service:
+    container_name: rapport_service
+    build:
+      context: ./backend/services/rapport
+      dockerfile: Dockerfile
+    ports:
+      - "3004:3004"
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - ./backend/services/rapport/.env
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  feu-service:
+    container_name: feu_service
+    build:
+      context: ./backend/services/feu
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - ./backend/services/feu/.env 
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  users-service:
+    container_name: users_service
+    build:
+      context: ./backend/services/users
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./backend/services/users/.env
+    networks:
+      - app-network
+    restart: unless-stopped 
+
+  frontend:
+    container_name: fire_alert_frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "4200:4200"
+    environment:
+      - NODE_ENV=production
+    # depends_on:
+    #   - api-gateway
+    networks:
+      - app-network  
+    restart: unless-stopped
+    command: npm start -- --host 0.0.0.0 --port 4200 
+  
+  database:
+    container_name: fire_db
+    image: postgres:13
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: aymane
+      POSTGRES_PASSWORD: PASSWORD_DB_25
+      POSTGRES_DB: feux_de_chantier
+    networks:
+      - app-network
+    volumes:
+      - ./database/sql/create.sql:/docker-entrypoint-initdb.d/create.sql
+      - ./database/sql/insert.sql:/docker-entrypoint-initdb.d/insert.sql
+      - ./database/sql/select.sql:/docker-entrypoint-initdb.d/select.sql
+      - ./database/sql/update.sql:/docker-entrypoint-initdb.d/update.sql
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+
+networks:
+  app-network:
+    driver: bridge
+
+
+volumes:
+  pgdata:

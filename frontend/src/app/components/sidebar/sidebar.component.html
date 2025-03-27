@@ -1,0 +1,58 @@
+<nav class="sidebar bg-dark text-white vh-100 p-3 d-flex flex-column" style="width: 250px;" role="navigation">
+  <ul class="nav flex-column flex-grow-1">
+    <li class="nav-item mb-2">
+      <a class="nav-link text-white hover-effect py-2" 
+         [routerLink]="['/dashboard']" 
+         routerLinkActive="active">
+        <i class="fas fa-gauge me-2"></i>
+        Dashboard
+      </a>
+    </li>
+    <li class="nav-item mb-2">
+      <a class="nav-link text-white hover-effect py-2" 
+         [routerLink]="['/alert-list']" 
+         routerLinkActive="active">
+        <i class="fas fa-bell me-2"></i>
+        Alertes
+      </a>
+    </li>
+    <li class="nav-item mb-2">
+      <a class="nav-link text-white hover-effect py-2" 
+         [routerLink]="['/fire-management']" 
+         routerLinkActive="active">
+        <i class="fas fa-fire me-2"></i>
+        Gestion des Feux
+      </a>
+    </li>
+    <li class="nav-item mb-2">
+      <a class="nav-link text-white hover-effect py-2" 
+         [routerLink]="['/analyse-reports']" 
+         routerLinkActive="active">
+        <i class="fas fa-chart-bar me-2"></i>
+        Rapports
+      </a>
+    </li>
+    <li class="nav-item mb-2">
+      <a class="nav-link text-white hover-effect py-2" 
+         [routerLink]="['/settings']" 
+         routerLinkActive="active">
+        <i class="fas fa-cog me-2"></i>
+        Paramètres
+      </a>
+    </li>
+    <li class="nav-item mb-2">
+      <a class="nav-link text-white hover-effect py-2" 
+         [routerLink]="['/user-management']" 
+         routerLinkActive="active">
+        <i class="fas fa-users me-2"></i>
+        Utilisateurs
+      </a>
+    </li>
+  </ul>
+
+  <!-- Bouton de Déconnexion -->
+  <button class="logout-btn btn btn-danger mt-auto" (click)="logout()">
+    <i class="fas fa-sign-out-alt me-2"></i>
+    Déconnexion
+  </button>
+</nav>

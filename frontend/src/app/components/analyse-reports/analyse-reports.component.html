@@ -1,0 +1,56 @@
+<div class="container">
+  <h2 class="mb-4">Analyse et Rapports</h2>
+  
+  <div class="row g-4 mb-4">
+    <div class="col-md-4">
+      <div class="card bg-primary text-white h-100">
+        <div class="card-body">
+          <h5 class="card-title">Feux Actifs</h5>
+          <div class="d-flex align-items-center">
+            <h2 class="mb-0">{{ totalFeuxActifs }}</h2>
+            <i class="bi bi-fire ms-auto fs-1"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card bg-danger text-white h-100">
+        <div class="card-body">
+          <h5 class="card-title">Alertes Actives</h5>
+          <div class="d-flex align-items-center">
+            <h2 class="mb-0">{{ totalAlertes }}</h2>
+            <i class="bi bi-exclamation-triangle ms-auto fs-1"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card bg-success text-white h-100">
+        <div class="card-body">
+          <h5 class="card-title">Interventions</h5>
+          <div class="d-flex align-items-center">
+            <h2 class="mb-0">{{ totalInterventions }}</h2>
+            <i class="bi bi-check-circle ms-auto fs-1"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h4 class="card-title mb-4">Évolution Mensuelle des Alertes</h4>
+      <div class="chart-container" style="height: 400px;">
+        <canvas id="alertChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-end mt-4">
+    <button class="btn btn-primary" (click)="exporterRapport()">
+      <i class="bi bi-file-pdf me-2"></i>Exporter le Rapport
+    </button>
+  </div>
+</div>

@@ -1,0 +1,54 @@
+/* Style de la barre latérale */
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  background-color: #343a40; /* Dark Bootstrap */
+  color: white;
+  padding: 20px;
+  display: flex;
+  flex-direction: column; /* Permet d'aligner les éléments verticalement */
+}
+
+/* Style des liens de navigation */
+.nav-link {
+  color: white !important;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+/* Effet de survol */
+.nav-link:hover, .nav-link.active {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+/* Style du bouton de déconnexion */
+.logout-btn {
+  padding: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s, transform 0.2s;
+  margin-top: auto; /* Place automatiquement le bouton en bas */
+}
+
+/* Icône de déconnexion */
+.logout-btn i {
+  margin-right: 8px;
+  font-size: 18px;
+}
+
+/* Effet de survol du bouton de déconnexion */
+.logout-btn:hover {
+  background-color: #c82333;
+  transform: scale(1.05);
+}

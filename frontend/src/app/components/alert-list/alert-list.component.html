@@ -1,0 +1,64 @@
+<div class="alert-management-container p-3">
+  <div class="header d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Gestion des Alertes</h2>
+    <div class="filters" style="width: 200px;">
+      <select class="form-select" (change)="filterAlerts($event)">
+        <option value="TOUTES">Toutes les alertes</option>
+        <option value="CRITIQUE">Alertes critiques</option>
+        <option value="MAJEURE">Alertes majeures</option>
+        <option value="MINEURE">Alertes mineures</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Date</th>
+          <th>Type</th>
+          <th>Feu</th>
+          <th>Description</th>
+          <th>Criticité</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let alert of filteredAlerts" 
+            [class.table-warning]="!alert.date_resolution"
+            [class.table-danger]="alert.criticite === 'CRITIQUE'">
+          <td>{{ alert.date_alerte }}</td>
+          <td>{{ getAlertTypeLabel(alert.type_alerte) }}</td>
+          <td class="font-monospace">{{ alert.num_serie }}</td>
+          <td class="text-truncate" style="max-width: 200px;" 
+              [title]="alert.description">{{ alert.description }}</td>
+          <td>
+            <span [ngClass]="getStatusClass(alert.criticite)">
+              {{ alert.criticite | lowercase }}
+            </span>
+          </td>
+          <td>
+            <span class="badge" 
+                  [class.bg-success]="alert.date_resolution"
+                  [class.bg-secondary]="!alert.date_resolution">
+              {{ alert.date_resolution ? 'Résolue' : 'En cours' }}
+            </span>
+          </td>
+          <td>
+            <div class="d-flex gap-2">
+              <button *ngIf="!alert.date_resolution" 
+                      class="btn btn-sm btn-success"
+                      (click)="resolveAlert(alert.id_alerte)">
+                <i class="bi bi-check-circle me-1"></i>Résoudre
+              </button>
+              <button class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-info-circle me-1"></i>Détails
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

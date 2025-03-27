@@ -1,0 +1,61 @@
+<div class="content-wrapper">
+  <!-- Barre de navigation -->
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1>Tableau de Bord</h1>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contenu du dashboard -->
+  <section class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Statistiques -->
+        <div class="col-lg-3 col-6" *ngFor="let stat of [
+          {value: totalFeux, label: 'Feux de chantier actifs', color: 'info', icon: 'fa-lightbulb'},
+          {value: totalAlertes, label: 'Alertes en cours', color: 'warning', icon: 'fa-exclamation-triangle'},
+          {value: totalInterventions, label: 'Interventions réalisées', color: 'success', icon: 'fa-tools'},
+          {value: totalDefauts, label: 'Feux en panne', color: 'danger', icon: 'fa-bolt'}
+        ]">
+          <div class="small-box bg-{{stat.color}}">
+            <div class="inner">
+              <h3>{{ stat.value }}</h3>
+              <p>{{ stat.label }}</p>
+            </div>
+            <div class="icon">
+              <i class="fas {{ stat.icon }}"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Graphiques -->
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header"><h3 class="card-title">État des batteries</h3></div>
+            <div class="card-body"><canvas id="batteryChart"></canvas></div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header"><h3 class="card-title">Modes de fonctionnement</h3></div>
+            <div class="card-body"><canvas id="functionChart"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Liste des alertes -->
+      <div class="row">
+        <div class="col-md-6">
+          <app-alert-list></app-alert-list>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

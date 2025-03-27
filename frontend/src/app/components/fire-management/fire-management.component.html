@@ -1,0 +1,387 @@
+<div class="container">
+  <h2 class="my-4">Gestion des Feux de Chantier</h2>
+
+  <!-- Alerte -->
+  <div *ngIf="messageSucces || messageErreur"
+       class="alert alert-dismissible fade show"
+       [ngClass]="{
+         'alert-success': messageSucces,
+         'alert-danger': messageErreur
+       }">
+    {{ messageSucces || messageErreur }}
+    <button type="button" class="btn-close" (click)="fermerAlerte()"></button>
+  </div>
+
+  <!-- Bouton d'ajout -->
+  <button class="btn btn-primary mb-3"
+          data-bs-toggle="modal"
+          data-bs-target="#ajoutFeuModal">
+    <i class="bi bi-plus-circle me-2"></i>Ajouter un Feu
+  </button>
+
+  <!-- Tableau -->
+  <div class="table-responsive">
+    <table class="table table-striped table-hover">
+      <thead class="table-light">
+        <tr>
+          <th>#</th>
+          <th>N° Groupe</th>
+          <th>N° Série</th>
+          <th>État Optiques (bas)</th>
+          <th>État Batteries</th>
+          <th>Mode</th>
+          <th>Position</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Parcours des feux -->
+        <tr *ngFor="let feu of feux">
+          <td>{{ feu.id_feu }}</td>
+          <td>{{ feu.id_groupe }}</td>
+          <td>{{ feu.num_serie }}</td>
+
+          <!-- État optique : on affiche par exemple etat_bas du dernier enregistrement -->
+          <td>
+            <span
+              [ngClass]="{
+                'text-success': getLatest(feu.etats_optiques)?.etat_bas === EtatOptiques.OPERATIONNELLE,
+                'text-warning': getLatest(feu.etats_optiques)?.etat_bas === EtatOptiques.DEFAUT,
+                'text-danger': getLatest(feu.etats_optiques)?.etat_bas === EtatOptiques.DEFECTUEUX
+              }">
+              {{ getLatest(feu.etats_optiques)?.etat_bas }}
+            </span>
+          </td>
+
+          <!-- État batterie : on affiche type_etat_batterie du dernier enregistrement -->
+          <td>
+            <span
+              [ngClass]="{
+                'text-success': getLatest(feu.etats_batteries)?.type_etat_batterie === EtatBatterie.PLEIN,
+                'text-warning': getLatest(feu.etats_batteries)?.type_etat_batterie === EtatBatterie.SOIXANTE_QUINZE,
+                'text-danger': getLatest(feu.etats_batteries)?.type_etat_batterie === EtatBatterie.VIDE
+              }">
+              {{ getLatest(feu.etats_batteries)?.type_etat_batterie }}
+            </span>
+          </td>
+
+          <!-- Mode de fonctionnement -->
+          <td>
+            {{ getLatest(feu.fonctionnements)?.mode_fonctionnement }}
+          </td>
+
+          <!-- Position géographique -->
+          <td>
+            <small *ngIf="getLatest(feu.positions)">
+              Lat: {{ getLatest(feu.positions)?.latitude | number:'1.6-6' }}<br>
+              Long: {{ getLatest(feu.positions)?.longitude | number:'1.6-6' }}<br>
+              Position: {{ getLatest(feu.positions)?.position_physique }}
+            </small>
+          </td>
+
+          <!-- Actions -->
+          <td>
+            <button class="btn btn-warning btn-sm me-2"
+                    (click)="ouvrirModalModification(feu)"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modifFeuModal">
+              <i class="bi bi-pencil-square me-1"></i>Modifier
+            </button>
+            <button class="btn btn-danger btn-sm"
+                    (click)="supprimerFeu(feu.id_feu)">
+              <i class="bi bi-trash me-1"></i>Supprimer
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Carte (Leaflet) -->
+  <div *ngIf="isBrowser" class="map-container border rounded shadow mt-4">
+    <div id="map" style="height: 500px;"></div>
+  </div>
+
+  <!-- Modal Ajout -->
+  <div class="modal fade" id="ajoutFeuModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h5 class="modal-title">Ajouter un Feu</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" (click)="fermerModal('ajout')"></button>
+        </div>
+
+        <div class="modal-body">
+          <!-- S'assure que newFeu et ses tableaux ne sont pas vides -->
+          <form *ngIf="newFeu
+                    && newFeu.etats_optiques
+                    && newFeu.etats_optiques.length > 0
+                    && newFeu.etats_batteries
+                    && newFeu.fonctionnements
+                    && newFeu.positions "
+                (ngSubmit)="ajouterFeu()">
+            <div class="row g-3">
+              <!-- Colonne gauche -->
+              <div class="col-md-6">
+                <!-- Numéro de série -->
+                <div class="mb-3">
+                  <label class="form-label">Numéro de série</label>
+                  <input type="text"
+                         class="form-control"
+                         [(ngModel)]="newFeu.num_serie"
+                         name="num_serie"
+                         required>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Groupe</label>
+                    <input type="number" class="form-control" [(ngModel)]="newFeu.id_groupe" name="id_groupe" required>
+                </div>
+
+                <!-- État des optiques (bas) -->
+                <div class="mb-3">
+                  <label class="form-label">État des optiques (bas)</label>
+                  <select class="form-select"
+                          [(ngModel)]="newFeu.etats_optiques[0].etat_bas"
+                          name="etat_bas"
+                          required>
+                    <option *ngFor="let etat of EtatOptiques | keyvalue"
+                            [value]="etat.value">
+                      {{ etat.value }}
+                    </option>
+                  </select>
+                </div>
+
+                <!-- État des batteries -->
+                <div class="mb-3">
+                  <label class="form-label">État des batteries</label>
+                  <select class="form-select"
+                          [(ngModel)]="newFeu.etats_batteries[0].type_etat_batterie"
+                          name="etatBatterie"
+                          required>
+                    <option *ngFor="let etat of EtatBatterie | keyvalue"
+                            [value]="etat.value">
+                      {{ etat.value }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Colonne droite -->
+              <div class="col-md-6">
+                <!-- Mode de fonctionnement -->
+                <div class="mb-3">
+                  <label class="form-label">Mode de fonctionnement</label>
+                  <select class="form-select"
+                          [(ngModel)]="newFeu.fonctionnements[0].mode_fonctionnement"
+                          name="modeFonctionnement"
+                          required>
+                    <option *ngFor="let mode of ModeFonctionnement | keyvalue"
+                            [value]="mode.value">
+                      {{ mode.value }}
+                    </option>
+                  </select>
+                </div>
+
+                <!-- Position physique (Angle en degrés) -->
+                <div class="mb-3">
+                  <label class="form-label">Position physique (°)</label>
+                  <input type="number" step="0.000001" class="form-control" 
+                        [(ngModel)]="newFeu.positions[0].position_physique" 
+                        name="position_physique" min="0" max="360" required>
+                </div>
+
+
+                <!-- Latitude -->
+                <div class="mb-3">
+                  <label class="form-label">Latitude</label>
+                  <input type="number"
+                         step="0.000001"
+                         class="form-control"
+                         [(ngModel)]="newFeu.positions[0].latitude"
+                         name="latitude"
+                         min="-90"
+                         max="90"
+                         required>
+                </div>
+
+                <!-- Longitude -->
+                <div class="mb-3">
+                  <label class="form-label">Longitude</label>
+                  <input type="number"
+                         step="0.000001"
+                         class="form-control"
+                         [(ngModel)]="newFeu.positions[0].longitude"
+                         name="longitude"
+                         min="-180"
+                         max="180"
+                         required>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal-footer mt-4">
+              <button type="button"
+                      class="btn btn-secondary"
+                      data-bs-dismiss="modal">
+                Annuler
+              </button>
+              <button type="submit"
+                      class="btn btn-success">
+                <i class="bi bi-plus-circle me-1"></i>Ajouter
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Modification -->
+  <div class="modal fade" id="modifFeuModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h5 class="modal-title">
+            Modifier le Feu #{{ feuEnModification?.id_feu }}
+          </h5>
+          <button type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  (click)="fermerModal('modif')">
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <!-- On s'assure que feuEnModification et ses tableaux ne sont pas vides -->
+          <form *ngIf="feuEnModification
+                    && feuEnModification.etats_optiques
+                    && feuEnModification.etats_optiques.length > 0
+                    && feuEnModification.etats_batteries
+                    && feuEnModification.fonctionnements
+                    && feuEnModification.positions
+                    && feuEnModification.positions.length > 0"
+                (ngSubmit)="modifierFeu()">
+            <div class="row g-3">
+              <!-- Colonne gauche -->
+              <div class="col-md-6">
+                <!-- Numéro de série -->
+                <div class="mb-3">
+                  <label class="form-label">Numéro de série</label>
+                  <input type="text"
+                         class="form-control"
+                         [(ngModel)]="feuEnModification.num_serie"
+                         name="num_serie"
+                         required>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Groupe</label>
+                    <input type="number" class="form-control" [(ngModel)]="feuEnModification.id_groupe" name="id_groupe" required>
+                </div>
+
+                <!-- État des optiques (bas) -->
+                <div class="mb-3">
+                  <label class="form-label">État des optiques (bas)</label>
+                  <select class="form-select"
+                          [(ngModel)]="feuEnModification.etats_optiques[0].etat_bas"
+                          name="etat_bas"
+                          required>
+                    <option *ngFor="let etat of EtatOptiques | keyvalue"
+                            [value]="etat.value">
+                      {{ etat.value }}
+                    </option>
+                  </select>
+                </div>
+
+                <!-- État des batteries -->
+                <div class="mb-3">
+                  <label class="form-label">État des batteries</label>
+                  <select class="form-select"
+                          [(ngModel)]="feuEnModification.etats_batteries[0].type_etat_batterie"
+                          name="etatBatterie"
+                          required>
+                    <option *ngFor="let etat of EtatBatterie | keyvalue"
+                            [value]="etat.value">
+                      {{ etat.value }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Colonne droite -->
+              <div class="col-md-6">
+                <!-- Mode de fonctionnement -->
+                <div class="mb-3">
+                  <label class="form-label">Mode de fonctionnement</label>
+                  <select class="form-select"
+                          [(ngModel)]="feuEnModification.fonctionnements[0].mode_fonctionnement"
+                          name="modeFonctionnement"
+                          required>
+                    <option *ngFor="let mode of ModeFonctionnement | keyvalue"
+                            [value]="mode.value">
+                      {{ mode.value }}
+                    </option>
+                  </select>
+                </div>
+
+             <!-- Position physique (Angle en degrés) -->
+            <div class="mb-3">
+              <label class="form-label">Position physique (°)</label>
+              <input type="number" step="0.000001" class="form-control" 
+                    [(ngModel)]="feuEnModification.positions[feuEnModification.positions.length - 1].position_physique" 
+                    name="position_physique" min="0" max="360" required>
+            </div>
+
+
+                <!-- Latitude -->
+                <div class="mb-3">
+                  <label class="form-label">Latitude</label>
+                  <input *ngIf="feuEnModification.positions.length > 0"
+                         type="number"
+                         step="0.000001"
+                         class="form-control"
+                         [(ngModel)]="feuEnModification.positions[feuEnModification.positions.length - 1].latitude"
+                         name="latitude"
+                         min="-90"
+                         max="90"
+                         required>
+                </div>
+
+                <!-- Longitude -->
+                <div class="mb-3">
+                  <label class="form-label">Longitude</label>
+                  <input *ngIf="feuEnModification.positions.length > 0"
+                         type="number"
+                         step="0.000001"
+                         class="form-control"
+                         [(ngModel)]="feuEnModification.positions[feuEnModification.positions.length - 1].longitude"
+                         name="longitude"
+                         min="-180"
+                         max="180"
+                         required>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal-footer mt-4">
+              <button type="button"
+                      class="btn btn-secondary"
+                      data-bs-dismiss="modal"
+                      (click)="fermerModal('modif')">
+                Annuler
+              </button>
+              <button type="submit"
+                      class="btn btn-warning">
+                <i class="bi bi-pencil-square me-1"></i>Modifier
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
